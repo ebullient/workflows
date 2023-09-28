@@ -1,0 +1,47 @@
+name: Maven snapshot build
+on:
+  workflow_call:
+    inputs:
+      artifact:
+        required: true 
+        type: string
+      snapshot:
+        required: true 
+        type: string
+
+env:
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+  JAVA_VERSION: 17
+  GRAALVM_DIST: graalvm-community
+  JAVA_DISTRO: temurin
+
+jobs:
+
+  native-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 'main'
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
+          cache: maven
+
+      - name: Build with Maven
+        id: mvn-build
+        run: |
+          ./mvnw -B -ntp formatter:validate verify
+
+      - name: Upload ${{ inputs.artifact }}-${{ inputs.snapshot }}-runner.jar
+        uses: actions/upload-artifact@v3
+        id: upload-jar
+        with:
+          name: artifacts
+          path: target/${{ inputs.artifact }}-${{ inputs.snapshot }}-runner.jar

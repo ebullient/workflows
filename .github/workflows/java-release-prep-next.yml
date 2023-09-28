@@ -1,0 +1,58 @@
+name: Prepare next maven release
+
+# Controls when the workflow will run
+on:
+  workflow_call:
+    inputs:
+      snapshot:
+        required: true 
+        type: string
+      dry_run:
+        description: "Test capabilities, do not release"
+        default: false
+        required: true
+        type: boolean
+env:
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+
+jobs:
+  prep-next-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: 'main'
+
+      - name: Prepare for next release
+        id: mvn-next-release
+        if: inputs.dry_run == false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          SNAPSHOT=${{ inputs.SNAPSHOT }}
+          echo "🔹 Prepare for next release"
+
+          git config user.name ${{ env.GH_BOT_NAME }}
+          git config user.email ${{ env.GH_BOT_EMAIL }}
+
+          grep '<revision>' pom.xml
+          sed -E -i "s|<revision>.*</revision>|<revision>$SNAPSHOT</revision>|" pom.xml
+          git status
+
+          if git diff --quiet; then
+            echo "-- No changes -- "
+            exit 1
+          else
+            git add pom.xml
+            git commit -m "🔧 Prepare for next release"
+            git push origin main
+          fi
+
+          echo "Update tag for $SNAPSHOT"
+          git push origin :refs/tags/$SNAPSHOT
+          git tag -f $SNAPSHOT
+          git push --tags
+
+          gh release edit "${SNAPSHOT}"  -t "${SNAPSHOT}" --prerelease --draft=false

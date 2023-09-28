@@ -1,0 +1,70 @@
+name: Build and publish native artifacts
+
+# Controls when the workflow will run
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true 
+        type: string
+
+env:
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+  JAVA_VERSION: 17
+  GRAALVM_DIST: graalvm-community
+  JAVA_DISTRO: temurin
+
+jobs:
+  native-binaries:
+    name: Build ${{ matrix.os }} binary
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 'main'
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          cache: "maven"
+          components: "native-image"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.GRAALVM_DIST }}
+
+      - name: Build ${{ matrix.os }} native binary
+        id: mvn-native-build
+        env:
+          MAVEN_OPTS: "-Xmx1g"
+        run: ./mvnw -B -ntp package -Dnative -DskipTests -DskipITs -DskipFormat
+
+      - name: Assemble ${{ matrix.os }} archive
+        uses: jreleaser/release-action@v2
+        env:
+          JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
+        with:
+          arguments: assemble -s archive -scp -od target
+
+      - name: Upload ${{ matrix.os }} archive
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 1
+          name: artifacts
+          path: |
+            target/jreleaser/assemble/native-archive/archive/*.tgz
+            target/jreleaser/assemble/native-archive/archive/*.zip
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: native-image-${{ runner.os }}-logs
+          path: |
+            target/jreleaser/trace.log
+            target/jreleaser/output.properties

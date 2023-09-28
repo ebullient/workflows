@@ -1,0 +1,36 @@
+name: Native snapshot build
+on:
+  workflow_call:
+
+env:
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+  JAVA_VERSION: 17
+  GRAALVM_DIST: graalvm-community
+  JAVA_DISTRO: temurin
+
+jobs:
+
+  native-build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 'main'
+
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          distribution: ${{ env.GRAALVM_DIST }}
+          java-version: ${{ env.JAVA_VERSION }}
+          components: "native-image"
+          cache: 'maven'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and run in native mode
+        id: mvn-native-build
+        env:
+          MAVEN_OPTS: "-Xmx1g"
+        run: |
+          ./mvnw -B -ntp verify -Dnative -DskipTests -DskipFormat

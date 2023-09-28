@@ -1,0 +1,58 @@
+name: Update snapshot release
+
+# Controls when the workflow will run
+on:
+  workflow_call:
+    inputs:
+      artifact:
+        required: true 
+        type: string
+      snapshot:
+        required: true 
+        type: string
+
+env:
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+  JAVA_VERSION: 17
+  GRAALVM_DIST: graalvm-community
+  JAVA_DISTRO: temurin
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 'main'
+
+      - name: Download all workflow run artifacts
+        id: download
+        uses: actions/download-artifact@v3
+
+      - name: Update release with snapshot artifact
+        id: mvn-release-snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SNAPSHOT: ${{ inputs.snapshot }}
+        run: |
+          ARTIFACT=${{ inputs.artifact }}-${{ inputs.snapshot }}-runner.jar
+          gh release upload "${SNAPSHOT}" --clobber ./artifacts/${ARTIFACT}#${ARTIFACT}
+
+      - name: Update snapshot tag
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SNAPSHOT: ${{ inputs.snapshot }}
+        shell: bash
+        run: |
+          git config user.name ${{ env.GH_BOT_NAME }}
+          git config user.email ${{ env.GH_BOT_EMAIL }}
+
+          echo "Update tag for $SNAPSHOT"
+          git push origin :refs/tags/$SNAPSHOT
+          git tag -f $SNAPSHOT
+          git push --tags
+
+          gh release edit "${SNAPSHOT}"  -t "${SNAPSHOT}" --prerelease --draft=false

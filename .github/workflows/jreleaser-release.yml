@@ -1,0 +1,57 @@
+name: JReleaser - publish artifacts
+
+# Controls when the workflow will run
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true 
+        type: string
+      dry_run:
+        description: "Test capabilities, do not release"
+        default: false
+        required: true
+        type: boolean
+env:
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+  JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts --output-directory=target --select-platform=linux-x86_64 --select-platform=windows-x86_64 --select-platform=osx-x86_64'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 'main'
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Release with JReleaser
+        if: inputs.dry_run == true
+        uses: jreleaser/release-action@v2
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
+        with:
+          arguments: release ${JRELEASER_ARGS} --dry-run
+
+      - name: Release with JReleaser
+        if: inputs.dry_run == false
+        uses: jreleaser/release-action@v2
+        env:
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
+        with:
+          arguments: release ${JRELEASER_ARGS}
+
+      - name: JReleaser output
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-logs
+          path: |
+            target/jreleaser/trace.log
+            target/jreleaser/output.properties

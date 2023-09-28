@@ -1,0 +1,37 @@
+name: Java Project Metadata
+on:
+  workflow_call:
+    outputs:
+      snapshot:
+        description: Project snapshot version
+        value: ${{ jobs.project-metadata.outputs.snapshot }}
+      artifact: 
+        description: Project artifact id
+        value: ${{ jobs.project-metadata.outputs.artifact }}
+
+env:
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+
+jobs:
+  project-metadata:
+    runs-on: ubuntu-latest
+    outputs:
+      snapshot: ${{ steps.metadata.outputs.snapshot }}
+      artifact: ${{ steps.metadata.outputs.artifact }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: yq - portable yaml processor
+        uses: mikefarah/yq@v4.35.1
+
+      - name: Project metadata
+        id: metadata
+        run: |
+          SNAPSHOT=$(yq '.release.snapshot-version' .github/project.yml)
+          ARTIFACT=$(yq '.build.artifact' .github/project.yml)
+          echo "snapshot=${SNAPSHOT}" >> $GITHUB_OUTPUT
+          echo "artifact=${ARTIFACT}" >> $GITHUB_OUTPUT
