@@ -12,6 +12,10 @@ on:
         default: false
         required: true
         type: boolean
+      extras:
+        description: "Extra release artifacts"
+        type: string
+        required: false
 env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
@@ -55,3 +59,12 @@ jobs:
           path: |
             target/jreleaser/trace.log
             target/jreleaser/output.properties
+
+      - name: extras
+        if: inputs.dry_run == false && inputs.extras
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          for x in "${{ inputs.extras }}"; then
+            gh release upload "${{ inputs.version }}" --clobber ./artifacts/${x}#${x}
+          fi
