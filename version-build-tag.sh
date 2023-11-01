@@ -1,12 +1,16 @@
 #!/usr/bin/env bash -x
 set -eo pipefail
 
+## PARAMETER: INPUT: ${{ inputs.semver }}
 CURRENT=$(yq '.release.current-version' .github/project.yml )
 SNAPSHOT=$(yq '.release.snapshot-version' .github/project.yml)
 ARTIFACT=$(yq '.jitpack.artifact' .github/project.yml)
 GROUP=$(yq '.jitpack.group' .github/project.yml)
 
-if [[ -z "${INPUT}" ]] || [[ "${INPUT}" == "project" ]]; then
+if [[ "${RETRY}" == "true" ]]; then
+  NEXT=${CURRENT}
+  echo "🔹 Retry project version: $NEXT"
+elif [[ -z "${INPUT}" ]] || [[ "${INPUT}" == "project" ]]; then
   NEXT=$(yq '.release.next-version' .github/project.yml)
   echo "🔹 Use project version: $CURRENT --> $NEXT"
 else
@@ -41,11 +45,16 @@ else
   esac
 fi
 
-if [[ "${RETRY}" == "true" ]]; then
-  echo "🔹 Retrying release of $NEXT"
-elif git rev-parse "refs/tags/$NEXT" > /dev/null 2>&1; then
-  echo "🛑 Tag $NEXT already exists"
-  exit 1
+if git rev-parse "refs/tags/$NEXT" > /dev/null 2>&1; then
+  if [[ "${RETRY}" == "true" ]]; then
+    echo "🔹 Retrying release of $NEXT"
+    gh release delete $NEXT --cleanup-tag -y
+  else
+    echo "🛑 Tag $NEXT already exists"
+    exit 1
+  fi
+elif [[ "${RETRY}" == "true" ]]; then
+    echo "🔹 Retrying release of $NEXT"
 else
   # Messy and not maven-y, but whatever.
   echo "🔹 Update version to $NEXT"
@@ -74,13 +83,6 @@ fi
 if [[ "${DRY_RUN}" == "true" ]]; then
   echo "🔹 DRY RUN: skipping tag update"
 else
-  FLAG=
-  if git rev-parse "refs/tags/$NEXT" > /dev/null 2>&1; then
-    if [[ "$RETRY" == true ]]; then
-      git push origin :refs/tags/$NEXT
-      FLAG="-f "
-    fi
-  fi
 
   git status
   git diff
@@ -92,7 +94,7 @@ else
     git push origin main
   fi
 
-  git tag $FLAG$NEXT
+  git tag $NEXT
   git push --tags
 fi
 
