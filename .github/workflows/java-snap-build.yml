@@ -18,7 +18,7 @@ env:
 
 jobs:
 
-  native-build:
+  build:
     runs-on: ubuntu-latest
     
     steps:
