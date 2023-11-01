@@ -65,6 +65,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          for x in "${{ inputs.extras }}"; then
+          for x in "${{ inputs.extras }}"; do
             gh release upload "${{ inputs.version }}" --clobber ./artifacts/${x}#${x}
-          fi
+          done
