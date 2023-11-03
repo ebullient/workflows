@@ -47,6 +47,7 @@ jobs:
         uses: jreleaser/release-action@v2
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          JRELEASER_HOMEBREW_GITHUB_TOKEN: ${{ secrets.BREW_PUBLISH }}
           JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
         with:
           arguments: release ${JRELEASER_ARGS}
