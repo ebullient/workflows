@@ -57,5 +57,5 @@ jobs:
 
           echo "Update $SNAPSHOT release"
           gh release edit "${SNAPSHOT}"  -t "${SNAPSHOT}" --prerelease
-
+          gh release edit "${SNAPSHOT}" --draft=false
           gh release view "${SNAPSHOT}"
