@@ -8,6 +8,9 @@ on:
       snapshot:
         required: true 
         type: string
+      push:
+        type: string
+        required: false
 
 env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
@@ -45,3 +48,17 @@ jobs:
         with:
           name: artifacts
           path: target/${{ inputs.artifact }}-${{ inputs.snapshot }}-runner.jar
+      
+      - name: Push changes to files
+        id: git-push
+        if: ${{ inputs.push }}
+        run: |
+            git status
+            git diff
+            if git diff --quiet -- ${{ inputs.push }}; then
+              echo "-- No changes -- "
+            else
+              git add ${{ inputs.push }}
+              git commit -m "🤖 update generated content"
+              git push origin main
+            fi
