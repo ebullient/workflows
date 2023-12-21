@@ -89,7 +89,7 @@ else
   if git diff --quiet; then
     echo "-- No changes -- "
   else
-    git add README.md pom.xml .github/project.yml ${COMMIT_PATHS}
+    git add pom.xml .github/project.yml ${TEXT_REPLACE} ${COMMIT_PATHS}
     git commit -m "🔖 $NEXT"
     git push origin main
   fi
