@@ -53,9 +53,10 @@ jobs:
         id: git-push
         if: ${{ inputs.push }}
         run: |
+            git config user.name ${{ env.GH_BOT_NAME }}
+            git config user.email ${{ env.GH_BOT_EMAIL }}
             git status
-            git diff
-            if git diff --quiet -- ${{ inputs.push }}; then
+            if [ -z "$(git status --porcelain -- ${{ inputs.push }})" ]; then
               echo "-- No changes -- "
             else
               git add ${{ inputs.push }}
