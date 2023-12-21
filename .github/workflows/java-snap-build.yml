@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v4
         id: upload-jar
         with:
-          name: artifacts
+          name: artifacts-runner
           path: target/${{ inputs.artifact }}-${{ inputs.snapshot }}-runner.jar
       
       - name: Push changes to files

@@ -55,7 +55,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           retention-days: 1
-          name: artifacts
+          name: artifacts-native-${{ matrix.os }}
           path: |
             target/jreleaser/assemble/native-archive/archive/*.tgz
             target/jreleaser/assemble/native-archive/archive/*.zip
@@ -64,7 +64,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: native-image-${{ runner.os }}-logs
+          name: native-image-${{ matrix.os }}-logs
           path: |
             target/jreleaser/trace.log
             target/jreleaser/output.properties

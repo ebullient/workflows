@@ -31,6 +31,8 @@ jobs:
       - name: Download all workflow run artifacts
         id: download
         uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
 
       - name: Update release with snapshot artifact
         id: mvn-release-snapshot
