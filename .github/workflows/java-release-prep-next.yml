@@ -56,3 +56,5 @@ jobs:
           git push --tags
 
           gh release edit "${SNAPSHOT}"  -t "${SNAPSHOT}" --prerelease
+          gh release edit "${SNAPSHOT}" --draft=false
+          gh release view "${SNAPSHOT}"
