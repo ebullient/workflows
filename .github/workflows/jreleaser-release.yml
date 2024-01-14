@@ -48,7 +48,7 @@ jobs:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
         with:
-          arguments: release ${JRELEASER_ARGS} ${inputs.jreleaser_args} --dry-run
+          arguments: release ${JRELEASER_ARGS}  ${{ inputs.jreleaser_args }} --dry-run
 
       - name: Release with JReleaser
         if: inputs.dry_run == false
@@ -58,7 +58,7 @@ jobs:
           JRELEASER_HOMEBREW_GITHUB_TOKEN: ${{ secrets.BREW_PUBLISH }}
           JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
         with:
-          arguments: release ${JRELEASER_ARGS} ${inputs.jreleaser_args}
+          arguments: release ${JRELEASER_ARGS} ${{ inputs.jreleaser_args }}
 
       - name: JReleaser output
         if: always()
