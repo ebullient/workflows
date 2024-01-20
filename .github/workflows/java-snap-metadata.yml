@@ -25,9 +25,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: yq - portable yaml processor
-        uses: mikefarah/yq@v4.40.5
-
       - name: Project metadata
         id: metadata
         run: |
