@@ -59,7 +59,7 @@ else
   # Messy and not maven-y, but whatever.
   echo "🔹 Update version to $NEXT"
 
-  if [ -z ${TEXT_REPLACE} ]; then
+  if [[ -z "${TEXT_REPLACE}" ]]; then
     TEXT_REPLACE=README.md
   fi
   for x in ${TEXT_REPLACE}; do
