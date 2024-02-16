@@ -5,6 +5,8 @@ on:
 env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
+  JAVA_VERSION: 21
+  JAVA_DISTRO: temurin
 
 jobs:
 
@@ -16,6 +18,13 @@ jobs:
         with:
           fetch-depth: 0
           ref: 'main'
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
+          cache: maven
 
       - name: Generate cache key
         id: image-cache-key
