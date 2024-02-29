@@ -13,7 +13,7 @@ env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
 
-permissions: read-all
+permissions: {}
 
 jobs:
   project-metadata:
@@ -21,7 +21,8 @@ jobs:
     outputs:
       snapshot: ${{ steps.metadata.outputs.snapshot }}
       artifact: ${{ steps.metadata.outputs.artifact }}
-
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:

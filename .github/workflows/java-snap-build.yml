@@ -19,7 +19,7 @@ env:
   GRAALVM_DIST: graalvm-community
   JAVA_DISTRO: temurin
 
-permissions: read-all
+permissions: {}
 
 jobs:
 
@@ -52,7 +52,7 @@ jobs:
         with:
           name: artifacts-runner
           path: target/${{ inputs.artifact }}-${{ inputs.snapshot }}-runner.jar
-      
+
       - name: Push changes to files
         id: git-push
         if: ${{ inputs.push }}
@@ -69,3 +69,6 @@ jobs:
               git commit -m "🤖 update generated content"
               git push origin main
             fi
+
+      - name: Delete snapshots artifacts from cache
+        run: find ~/.m2 -name \*-SNAPSHOT -type d -exec rm -rf {} +

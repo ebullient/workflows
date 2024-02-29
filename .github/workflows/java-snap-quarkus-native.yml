@@ -8,13 +8,14 @@ env:
   JAVA_VERSION: 21
   JAVA_DISTRO: temurin
 
-permissions: read-all
+permissions: {}
 
 jobs:
 
   native-build:
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       actions: write
     steps:
       - uses: actions/checkout@v4
@@ -69,3 +70,6 @@ jobs:
             -Dnative \
             -Dquarkus.native.container-build=true \
             -Dquarkus.container-image.build=true
+
+      - name: Delete snapshots artifacts from cache
+        run: find ~/.m2 -name \*-SNAPSHOT -type d -exec rm -rf {} +
