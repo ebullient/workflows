@@ -13,6 +13,8 @@ env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
 
+permissions: read-all
+
 jobs:
   project-metadata:
     runs-on: ubuntu-latest

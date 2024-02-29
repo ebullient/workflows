@@ -8,11 +8,14 @@ env:
   JAVA_VERSION: 21
   JAVA_DISTRO: temurin
 
+permissions: read-all
+
 jobs:
 
   native-build:
     runs-on: ubuntu-latest
-    
+    permissions:
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:

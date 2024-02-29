@@ -19,11 +19,15 @@ env:
   GRAALVM_DIST: graalvm-community
   JAVA_DISTRO: temurin
 
+permissions: read-all
+
 jobs:
 
   build:
     runs-on: ubuntu-latest
-    
+    permissions:
+      contents: write
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,14 +56,16 @@ jobs:
       - name: Push changes to files
         id: git-push
         if: ${{ inputs.push }}
+        env:
+          PUSH: ${{ inputs.push }}
         run: |
             git config user.name ${{ env.GH_BOT_NAME }}
             git config user.email ${{ env.GH_BOT_EMAIL }}
             git status
-            if [ -z "$(git status --porcelain -- ${{ inputs.push }})" ]; then
+            if [ -z "$(git status --porcelain -- ${PUSH})" ]; then
               echo "-- No changes -- "
             else
-              git add ${{ inputs.push }}
+              git add ${PUSH}
               git commit -m "🤖 update generated content"
               git push origin main
             fi

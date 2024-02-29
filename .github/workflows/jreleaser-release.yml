@@ -26,9 +26,14 @@ env:
   GH_BOT_NAME: "GitHub Action"
   JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts --output-directory=target --select-platform=linux-x86_64 --select-platform=windows-x86_64 --select-platform=osx-x86_64'
 
+permissions: read-all
+
 jobs:
   release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
