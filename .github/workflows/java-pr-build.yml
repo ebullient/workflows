@@ -1,0 +1,47 @@
+name: Maven snapshot build
+on:
+  workflow_call:
+    inputs:
+      artifact:
+        required: true 
+        type: string
+      snapshot:
+        required: true 
+        type: string
+
+env:
+  GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
+  GH_BOT_NAME: "GitHub Action"
+  JAVA_VERSION: 17
+  GRAALVM_DIST: graalvm-community
+  JAVA_DISTRO: temurin
+
+permissions: {}
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: 'main'
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRO }}
+          cache: maven
+
+      - name: Build with Maven
+        id: mvn-build
+        run: |
+          ./mvnw -B -ntp formatter:validate verify
+
+      - name: Delete snapshots artifacts from cache
+        run: find ~/.m2 -name \*-SNAPSHOT -type d -exec rm -rf {} +

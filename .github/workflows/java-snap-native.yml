@@ -5,7 +5,7 @@ on:
 env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
-  JAVA_VERSION: 17
+  JAVA_VERSION: 21
   GRAALVM_DIST: graalvm-community
   JAVA_DISTRO: temurin
 
