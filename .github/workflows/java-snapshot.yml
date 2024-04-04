@@ -31,6 +31,11 @@ jobs:
           fetch-depth: 0
           ref: 'main'
 
+      - name: configure git
+        run : |
+          git config user.name ${{ env.GH_BOT_NAME }}
+          git config user.email ${{ env.GH_BOT_EMAIL }}
+
       - name: Download all workflow run artifacts
         id: download
         uses: actions/download-artifact@v4
@@ -42,26 +47,41 @@ jobs:
         id: mvn-release-snapshot
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ARTIFACT: ${{ inputs.artifact }}
           SNAPSHOT: ${{ inputs.snapshot }}
         run: |
-          ARTIFACT=${{ inputs.artifact }}-${{ inputs.snapshot }}-runner.jar
-          gh release upload "${SNAPSHOT}" --clobber ./artifacts/${ARTIFACT}#${ARTIFACT}
+          JAR=${ARTIFACT}-${SNAPSHOT}-runner.jar
+          gh release upload "${SNAPSHOT}" --clobber ./artifacts/${JAR}#${JAR}
 
+          BINARY=target/jreleaser/assemble/native-archive/${ARTIFACT}-${SNAPSHOT}
+          if [[ -f ${BINARY}-linux-x86_64.tgz ]]; then
+            gh release upload "${SNAPSHOT}" --clobber ${BINARY}-linux-x86_64.tgz#${ARTIFACT}-${SNAPSHOT}-linux-x86_64.tgz
+          fi
+          if [[ -f ${BINARY}-windows-x86_64.zip ]]; then
+            gh release upload "${SNAPSHOT}" --clobber ${BINARY}-windows-x86_64.zip#${ARTIFACT}-${SNAPSHOT}-windows-x86_64.zip
+          fi
+          if [[ -f ${BINARY}-osx-x86_64.zip ]]; then
+            gh release upload "${SNAPSHOT}" --clobber ${BINARY}-osx-x86_64.zip#${ARTIFACT}-${SNAPSHOT}-osx-x86_64.zip
+          fi
+  
       - name: Update snapshot tag
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SNAPSHOT: ${{ inputs.snapshot }}
         shell: bash
         run: |
-          git config user.name ${{ env.GH_BOT_NAME }}
-          git config user.email ${{ env.GH_BOT_EMAIL }}
-
           echo "Update tag for $SNAPSHOT"
           git push origin :refs/tags/$SNAPSHOT
           git tag -f $SNAPSHOT
           git push --tags
 
           echo "Update $SNAPSHOT release"
-          gh release edit "${SNAPSHOT}"  -t "${SNAPSHOT}" --prerelease
+          gh release edit "${SNAPSHOT}" -t "${SNAPSHOT}" --prerelease
+
+      - name: Not draft release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SNAPSHOT: ${{ inputs.snapshot }}
+        run: |
           gh release edit "${SNAPSHOT}" --draft=false
           gh release view "${SNAPSHOT}"
