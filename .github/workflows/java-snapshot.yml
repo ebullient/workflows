@@ -54,10 +54,12 @@ jobs:
           ARTIFACT: ${{ inputs.artifact }}
           SNAPSHOT: ${{ inputs.snapshot }}
         run: |
+          find .
+
           JAR=${ARTIFACT}-${SNAPSHOT}-runner.jar
           gh release upload "${SNAPSHOT}" --clobber ./artifacts/${JAR}#${JAR}
 
-          BINARY=target/jreleaser/assemble/native-archive/${ARTIFACT}-${SNAPSHOT}
+          BINARY=./artifacts/${ARTIFACT}-${SNAPSHOT}
           if [[ -f ${BINARY}-linux-x86_64.tgz ]]; then
             gh release upload "${SNAPSHOT}" --clobber ${BINARY}-linux-x86_64.tgz#${ARTIFACT}-${SNAPSHOT}-linux-x86_64.tgz
           fi
