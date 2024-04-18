@@ -70,6 +70,3 @@ jobs:
             -Dnative \
             -Dquarkus.native.container-build=true \
             -Dquarkus.container-image.build=true
-
-      - name: Delete snapshots artifacts from cache
-        run: find ~/.m2 -name \*-SNAPSHOT -type d -exec rm -rf {} +

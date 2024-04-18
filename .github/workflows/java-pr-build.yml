@@ -42,6 +42,3 @@ jobs:
         id: mvn-build
         run: |
           ./mvnw -B -ntp formatter:validate verify
-
-      - name: Delete snapshots artifacts from cache
-        run: find ~/.m2 -name \*-SNAPSHOT -type d -exec rm -rf {} +
