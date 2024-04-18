@@ -37,11 +37,10 @@ jobs:
 
       - uses: graalvm/setup-graalvm@v1
         with:
-          cache: "maven"
-          components: "native-image"
           github-token: ${{ secrets.GITHUB_TOKEN }}
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.GRAALVM_DIST }}
+          cache: "maven"
 
       - name: Build ${{ matrix.os }} native binary
         id: mvn-native-build

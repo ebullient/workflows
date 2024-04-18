@@ -27,9 +27,8 @@ jobs:
         with:
           distribution: ${{ env.GRAALVM_DIST }}
           java-version: ${{ env.JAVA_VERSION }}
-          components: "native-image"
-          cache: 'maven'
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          cache: 'maven'
 
       - name: Build and run in native mode
         id: mvn-native-build
