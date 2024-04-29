@@ -56,18 +56,21 @@ jobs:
         run: |
           find .
 
-          JAR=${ARTIFACT}-${SNAPSHOT}-runner.jar
-          gh release upload "${SNAPSHOT}" --clobber ./artifacts/${JAR}#${JAR}
-
           BINARY=./artifacts/${ARTIFACT}-${SNAPSHOT}
-          if [[ -f ${BINARY}-linux-x86_64.tgz ]]; then
-            gh release upload "${SNAPSHOT}" --clobber ${BINARY}-linux-x86_64.tgz#${ARTIFACT}-${SNAPSHOT}-linux-x86_64.tgz
+
+          gh release upload "${SNAPSHOT}" --clobber ${BINARY}-runner.jar#=${ARTIFACT}-${SNAPSHOT}-runner.jar
+
+          if [[ -f ${BINARY}-linux-x86_64.zip ]]; then
+            gh release upload "${SNAPSHOT}" --clobber ${BINARY}-linux-x86_64.zip#${ARTIFACT}-${SNAPSHOT}-linux-x86_64.zip
           fi
           if [[ -f ${BINARY}-windows-x86_64.zip ]]; then
             gh release upload "${SNAPSHOT}" --clobber ${BINARY}-windows-x86_64.zip#${ARTIFACT}-${SNAPSHOT}-windows-x86_64.zip
           fi
           if [[ -f ${BINARY}-osx-x86_64.zip ]]; then
             gh release upload "${SNAPSHOT}" --clobber ${BINARY}-osx-x86_64.zip#${ARTIFACT}-${SNAPSHOT}-osx-x86_64.zip
+          fi
+          if [[ -f ${BINARY}-osx-x86_64.zip ]]; then
+            gh release upload "${SNAPSHOT}" --clobber ${BINARY}-osx-aarch_64.zip #${ARTIFACT}-${SNAPSHOT}-osx-aarch_64.zip
           fi
   
       - name: Update snapshot tag
