@@ -24,7 +24,7 @@ on:
 env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
-  JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts --output-directory=target --select-platform=linux-x86_64 --select-platform=windows-x86_64 --select-platform=osx-x86_64 --select-platform=osx-aarch_64'
+  JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts --output-directory=target'
 
 permissions: {}
 
@@ -54,7 +54,7 @@ jobs:
           JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
           INPUT_ARGS: ${{ inputs.jreleaser_args }}
         with:
-          arguments: release ${JRELEASER_ARGS}  ${INPUT_ARGS} --dry-run
+          arguments: release ${JRELEASER_ARGS} ${INPUT_ARGS} --dry-run
 
       - name: Release with JReleaser
         if: inputs.dry_run == false
