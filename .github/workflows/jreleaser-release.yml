@@ -24,7 +24,7 @@ on:
 env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
-  JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts --output-directory=target --select-platform=linux-x86_64 --select-platform=windows-x86_64 --select-platform=osx-x86_64'
+  JRELEASER_ARGS: '-PnativeImageDir=artifacts -PuberJarDir=artifacts --output-directory=target --select-platform=linux-x86_64 --select-platform=windows-x86_64 --select-platform=osx-x86_64 --select-platform=osx-aarch_64'
 
 permissions: {}
 
@@ -52,8 +52,9 @@ jobs:
         env:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
+          INPUT_ARGS: ${{ inputs.jreleaser_args }}
         with:
-          arguments: release ${JRELEASER_ARGS}  ${{ inputs.jreleaser_args }} --dry-run
+          arguments: release ${JRELEASER_ARGS}  ${INPUT_ARGS} --dry-run
 
       - name: Release with JReleaser
         if: inputs.dry_run == false
@@ -62,8 +63,9 @@ jobs:
           JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           JRELEASER_HOMEBREW_GITHUB_TOKEN: ${{ secrets.BREW_PUBLISH }}
           JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
+          INPUT_ARGS: ${{ inputs.jreleaser_args }}
         with:
-          arguments: release ${JRELEASER_ARGS} ${{ inputs.jreleaser_args }}
+          arguments: release ${JRELEASER_ARGS} ${INPUT_ARGS}
 
       - name: JReleaser output
         if: always()
@@ -78,7 +80,9 @@ jobs:
         if: inputs.dry_run == false && inputs.extras
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXTRAS: ${{ inputs.extras }}
+          VERSION: ${{ inputs.version }}
         run: |
-          for x in "${{ inputs.extras }}"; do
-            gh release upload "${{ inputs.version }}" --clobber ./artifacts/${x}#${x}
+          for x in "${EXTRAS}"; do
+            gh release upload "${VERSION}" --clobber ./artifacts/${x}#${x}
           done
