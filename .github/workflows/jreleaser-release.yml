@@ -55,7 +55,7 @@ jobs:
           JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
           INPUT_ARGS: ${{ inputs.jreleaser_args }}
         with:
-          arguments: release ${JRELEASER_ARGS} ${INPUT_ARGS} --dry-run
+          arguments: full-release ${JRELEASER_ARGS} ${INPUT_ARGS} --dry-run
 
       - name: Release with JReleaser
         if: inputs.dry_run == false
@@ -66,7 +66,7 @@ jobs:
           JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
           INPUT_ARGS: ${{ inputs.jreleaser_args }}
         with:
-          arguments: release ${JRELEASER_ARGS} ${INPUT_ARGS}
+          arguments: full-release ${JRELEASER_ARGS} ${INPUT_ARGS}
 
       - name: JReleaser output
         if: always()
