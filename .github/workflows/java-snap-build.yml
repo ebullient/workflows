@@ -11,6 +11,18 @@ on:
       push:
         type: string
         required: false
+      dataCache_path:
+        type: string
+        required: false
+      dataCache_key:
+        type: string
+        required: false
+      dataCache_restore-keys:
+        type: string
+        default: ''
+      dataCache_fail-on-cache-miss:
+        type: boolean
+        default: false
 
 env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
@@ -40,6 +52,15 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRO }}
           cache: maven
+
+      - uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
+        if: ${{ inputs.dataCache_path && inputs.dataCache_key }}
+        id: data-cache
+        with:
+          path: ${{ inputs.dataCache_path }}
+          key: ${{ inputs.dataCache_key }}
+          restore-keys:  ${{ inputs.dataCache_restore-keys }}
+          fail-on-cache-miss: ${{ inputs.dataCache_fail-on-cache-miss }}
 
       - name: Build with Maven
         id: mvn-build
