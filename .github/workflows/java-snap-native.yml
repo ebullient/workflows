@@ -7,7 +7,6 @@ env:
   GH_BOT_NAME: "GitHub Action"
   JAVA_VERSION: 21
   GRAALVM_DIST: graalvm-community
-  JAVA_DISTRO: temurin
 
 permissions: {}
 
