@@ -57,7 +57,7 @@ jobs:
 
           BINARY=./artifacts/${ARTIFACT}-${SNAPSHOT}
 
-          gh release upload "${SNAPSHOT}" --clobber ${BINARY}-runner.jar#=${ARTIFACT}-${SNAPSHOT}-runner.jar
+          gh release upload "${SNAPSHOT}" --clobber ${BINARY}-runner.jar#${ARTIFACT}-${SNAPSHOT}-runner.jar
 
           if [[ -f ${BINARY}-linux-x86_64.zip ]]; then
             gh release upload "${SNAPSHOT}" --clobber ${BINARY}-linux-x86_64.zip#${ARTIFACT}-${SNAPSHOT}-linux-x86_64.zip
