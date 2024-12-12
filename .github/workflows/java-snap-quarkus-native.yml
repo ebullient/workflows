@@ -5,7 +5,7 @@ on:
 env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
-  JAVA_VERSION: 21
+  JAVA_VERSION: 23
   JAVA_DISTRO: temurin
 
 permissions: {}
@@ -46,8 +46,8 @@ jobs:
         if: steps.cache-restore.outputs.cache-hit != 'true'
         run: |
           mkdir -p build-image
-          docker pull quay.io/quarkus/ubi-quarkus-mandrel-builder-image:jdk-21
-          docker save quay.io/quarkus/ubi-quarkus-mandrel-builder-image:jdk-21 -o build-image/mandrel.tar
+          docker pull quay.io/quarkus/ubi-quarkus-mandrel-builder-image:jdk-23
+          docker save quay.io/quarkus/ubi-quarkus-mandrel-builder-image:jdk-23 -o build-image/mandrel.tar
   
       - uses: actions/cache/save@v4
         id: cache-save
