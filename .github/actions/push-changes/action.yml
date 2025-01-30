@@ -1,0 +1,40 @@
+name: 'Git Push Changes'
+description: 'Commits and pushes changes to specified files'
+
+inputs:
+  files:
+    description: 'Files or paths to check and push'
+    required: true
+  bot-email:
+    description: 'Email for git config'
+    default: '41898282+github-actions[bot]@users.noreply.github.com'
+  bot-name:
+    description: 'Name for git config'
+    default: 'GitHub Action'
+  commit-message:
+    description: 'Commit message'
+    default: '🤖 update generated content'
+  branch:
+    description: 'Branch to push to'
+    default: 'main'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure Git
+      shell: bash
+      run: |
+        git config user.name "${{ inputs.bot-name }}"
+        git config user.email "${{ inputs.bot-email }}"
+
+    - name: Push changes
+      if: endsWith(github.ref, inputs.branch)
+      shell: bash
+      run: |
+        if [ -z "$(git status --porcelain -- ${{ inputs.files }})" ]; then
+          echo "-- No changes -- "
+        else
+          git add ${{ inputs.files }}
+          git commit -m "${{ inputs.commit-message }}"
+          git push origin ${{ inputs.branch }}
+        fi

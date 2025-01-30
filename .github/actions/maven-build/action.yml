@@ -1,0 +1,36 @@
+name: 'Maven Build and Upload'
+description: 'Builds a Maven project and uploads the runner jar as an artifact'
+
+inputs:
+  artifact:
+    description: 'Base name of the artifact'
+    required: true
+  version:
+    description: 'Artifact version'
+    required: true
+  java-version:
+    description: 'Java version to use'
+    default: '17'
+  java-distribution:
+    description: 'Java distribution to use'
+    default: 'temurin'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: ${{ inputs.java-distribution }}
+        cache: maven
+
+    - name: Build with Maven
+      shell: bash
+      run: ./mvnw -B -ntp formatter:validate verify
+
+    - name: Upload runner jar
+      uses: actions/upload-artifact@v4
+      with:
+        name: artifacts-runner
+        path: target/${{ inputs.artifact }}-${{ inputs.version }}-runner.jar

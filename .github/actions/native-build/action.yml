@@ -1,0 +1,67 @@
+name: 'Native Build and Upload'
+description: 'Builds a native binaries for a Maven project and uploads the artifacts'
+
+inputs:
+  artifact:
+    description: 'Base name of the artifact'
+    required: true
+  version:
+    description: 'Artifact version'
+    required: true
+  native-java-version:
+    description: 'Java version to use for native builds'
+    default: '23'
+  distribution:
+    description: 'GraalVM distribution to use'
+    default: 'graalvm-community'
+  maven-opts:
+    description: 'Maven options (e.g. -Xmx1g)'
+    default: '-Xmx1g'
+  maven-args:
+    description: 'Maven command line arguments (e.g. -DskipTests)'
+    default: ''
+  matrix-os:
+    description: Operating system for this step
+    default: ubuntu-latest
+
+runs:
+  using: "composite"
+  steps:
+    - uses: graalvm/setup-graalvm@v1
+      with:
+        distribution: ${{ inputs.distribution }}
+        java-version: ${{ inputs.native-java-version }}
+        github-token: ${{ github.token }}
+        cache: 'maven'
+
+    - name: Build and run in native mode
+      shell: bash
+      env:
+        MAVEN_OPTS: ${{ inputs.maven-opts }}
+      run: |
+        ./mvnw -B -ntp verify -Dnative -DskipFormat ${{ inputs.maven-args }}
+
+    - name: Assemble ${{ inputs.matrix-os }} archive
+      uses: jreleaser/release-action@v2
+      env:
+        JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
+      with:
+        arguments: assemble --assembler=archive --select-current-platform --output-directory target
+
+    - name: Upload ${{ inputs.matrix-os }} archive
+      uses: actions/upload-artifact@v4
+      with:
+        retention-days: 1
+        name: artifacts-native-${{ inputs.matrix-os }}
+        path: |
+          target/jreleaser/assemble/native-archive/archive/*.tgz
+          target/jreleaser/assemble/native-archive/archive/*.zip
+
+    - name: JReleaser output
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: native-image-${{ inputs.matrix-os }}-logs
+        path: |
+          target/jreleaser/trace.log
+          target/jreleaser/output.properties
