@@ -27,7 +27,7 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: graalvm/setup-graalvm@v1
+    - uses: graalvm/setup-graalvm@7a1da54cb7fdef4ea19f6ecdfa9ecf59dc5a48fe # v1.3.6
       with:
         distribution: ${{ inputs.distribution }}
         java-version: ${{ inputs.native-java-version }}
@@ -42,14 +42,14 @@ runs:
         ./mvnw -B -ntp verify -Dnative -DskipFormat ${{ inputs.maven-args }}
 
     - name: Assemble ${{ inputs.matrix-os }} archive
-      uses: jreleaser/release-action@v2
+      uses: jreleaser/release-action@1ff4a6846b24cd704afa179ee87a662b4952615b # v2
       env:
         JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
       with:
         arguments: assemble --assembler=archive --select-current-platform --output-directory target
 
     - name: Upload ${{ inputs.matrix-os }} archive
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         retention-days: 1
         name: artifacts-native-${{ inputs.matrix-os }}
@@ -59,7 +59,7 @@ runs:
 
     - name: JReleaser output
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
       with:
         name: native-image-${{ inputs.matrix-os }}-logs
         path: |

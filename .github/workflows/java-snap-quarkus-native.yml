@@ -18,13 +18,13 @@ jobs:
       contents: read
       actions: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           fetch-depth: 0
           ref: 'main'
 
       - name: Set up JDK ${{ env.JAVA_VERSION }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
         with:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: ${{ env.JAVA_DISTRO }}
@@ -37,7 +37,7 @@ jobs:
   
       - name: Restore cached build image
         id: cache-restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         with:
           path: build-image/mandrel.tar
           key: ${{ steps.image-cache-key.outputs.cache_key }}
@@ -49,7 +49,7 @@ jobs:
           docker pull quay.io/quarkus/ubi-quarkus-mandrel-builder-image:jdk-23
           docker save quay.io/quarkus/ubi-quarkus-mandrel-builder-image:jdk-23 -o build-image/mandrel.tar
   
-      - uses: actions/cache/save@v4
+      - uses: actions/cache/save@0400d5f644dc74513175e3cd8d07132dd4860809 # v4.2.4
         id: cache-save
         if: always()
         with:

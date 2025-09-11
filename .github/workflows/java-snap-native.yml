@@ -17,12 +17,12 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           fetch-depth: 0
           ref: 'main'
 
-      - uses: graalvm/setup-graalvm@v1
+      - uses: graalvm/setup-graalvm@7a1da54cb7fdef4ea19f6ecdfa9ecf59dc5a48fe # v1.3.6
         with:
           distribution: ${{ env.GRAALVM_DIST }}
           java-version: ${{ env.JAVA_VERSION }}

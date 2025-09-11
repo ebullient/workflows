@@ -29,12 +29,12 @@ jobs:
       contents: read
       actions: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           fetch-depth: 0
           ref: 'main'
 
-      - uses: graalvm/setup-graalvm@v1
+      - uses: graalvm/setup-graalvm@7a1da54cb7fdef4ea19f6ecdfa9ecf59dc5a48fe # v1.3.6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           java-version: ${{ env.JAVA_VERSION }}
@@ -48,14 +48,14 @@ jobs:
         run: ./mvnw -B -ntp package -Dnative -DskipTests -DskipITs -DskipFormat
 
       - name: Assemble ${{ matrix.os }} archive
-        uses: jreleaser/release-action@v2
+        uses: jreleaser/release-action@1ff4a6846b24cd704afa179ee87a662b4952615b # v2
         env:
           JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
         with:
           arguments: assemble --assembler=archive --select-current-platform --output-directory target
 
       - name: Upload ${{ matrix.os }} archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           retention-days: 1
           name: artifacts-native-${{ matrix.os }}
@@ -65,7 +65,7 @@ jobs:
 
       - name: JReleaser output
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: native-image-${{ matrix.os }}-logs
           path: |
