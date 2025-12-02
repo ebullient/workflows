@@ -70,6 +70,8 @@ jobs:
           echo "version: ${{ github.event.inputs.version }}"
           echo "retry: ${{ github.event.inputs.retry }}"
 
+          git pull
+          
           VERSION=$(npm version ${INPUT_VERSION} --tag-version-prefix="" --no-git-tag-version)
           echo ${INPUT_VERSION} -- ${VERSION}
 
