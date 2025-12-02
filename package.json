@@ -1,0 +1,17 @@
+{
+  "name": "@ebullient/workflows",
+  "version": "0.1.0",
+  "description": "Reusable GitHub Actions workflows and composite actions",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ebullient/workflows.git"
+  },
+  "keywords": [
+    "github-actions",
+    "workflows",
+    "composite-actions"
+  ],
+  "author": "ebullient",
+  "license": "Apache-2.0"
+}
