@@ -55,7 +55,7 @@ jobs:
           arguments: assemble --assembler=archive --select-current-platform --output-directory target
 
       - name: Upload ${{ matrix.os }} archive
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           retention-days: 1
           name: artifacts-native-${{ matrix.os }}
@@ -65,7 +65,7 @@ jobs:
 
       - name: JReleaser output
         if: always()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: native-image-${{ matrix.os }}-logs
           path: |
