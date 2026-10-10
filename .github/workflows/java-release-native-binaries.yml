@@ -4,14 +4,17 @@ name: Build and publish native artifacts
 on:
   workflow_call:
     inputs:
+      artifact:
+        required: true
+        type: string
       version:
-        required: true 
+        required: true
         type: string
 
 env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
-  JAVA_VERSION: 23
+  NATIVE_JAVA_VERSION: 25
   GRAALVM_DIST: graalvm-community
 
 permissions: {}
@@ -24,7 +27,7 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        os: [macos-15-intel, macos-latest, windows-latest, ubuntu-latest]
+        os: [macos-latest, windows-latest, ubuntu-latest]
     permissions:
       contents: read
       actions: write
@@ -34,40 +37,13 @@ jobs:
           fetch-depth: 0
           ref: 'main'
 
-      - uses: graalvm/setup-graalvm@7a1da54cb7fdef4ea19f6ecdfa9ecf59dc5a48fe # v1.3.6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          java-version: ${{ env.JAVA_VERSION }}
-          distribution: ${{ env.GRAALVM_DIST }}
-          cache: "maven"
-
       - name: Build ${{ matrix.os }} native binary
-        id: mvn-native-build
-        env:
-          MAVEN_OPTS: "-Xmx1g"
-        run: ./mvnw -B -ntp package -Dnative -DskipTests -DskipITs -DskipFormat
-
-      - name: Assemble ${{ matrix.os }} archive
-        uses: jreleaser/release-action@1ff4a6846b24cd704afa179ee87a662b4952615b # v2
-        env:
-          JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
+        uses: ./.github/actions/native-build
         with:
-          arguments: assemble --assembler=archive --select-current-platform --output-directory target
-
-      - name: Upload ${{ matrix.os }} archive
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
-        with:
-          retention-days: 1
-          name: artifacts-native-${{ matrix.os }}
-          path: |
-            target/jreleaser/assemble/native-archive/archive/*.tgz
-            target/jreleaser/assemble/native-archive/archive/*.zip
-
-      - name: JReleaser output
-        if: always()
-        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
-        with:
-          name: native-image-${{ matrix.os }}-logs
-          path: |
-            target/jreleaser/trace.log
-            target/jreleaser/output.properties
+          artifact: ${{ inputs.artifact }}
+          version: ${{ inputs.version }}
+          native-java-version: ${{ env.NATIVE_JAVA_VERSION }}
+          distribution: ${{ env.GRAALVM_DIST }}
+          maven-opts: "-Xmx1g"
+          maven-args: "-DskipTests -DskipITs"
+          matrix-os: ${{ matrix.os }}
