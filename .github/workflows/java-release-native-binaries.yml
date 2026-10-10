@@ -10,11 +10,14 @@ on:
       version:
         required: true
         type: string
+      native_java_version:
+        required: false
+        type: string
+        default: '25'
 
 env:
   GH_BOT_EMAIL: "41898282+github-actions[bot]@users.noreply.github.com"
   GH_BOT_NAME: "GitHub Action"
-  NATIVE_JAVA_VERSION: 25
   GRAALVM_DIST: graalvm-community
 
 permissions: {}
@@ -42,7 +45,7 @@ jobs:
         with:
           artifact: ${{ inputs.artifact }}
           version: ${{ inputs.version }}
-          native-java-version: ${{ env.NATIVE_JAVA_VERSION }}
+          native-java-version: ${{ inputs.native_java_version }}
           distribution: ${{ env.GRAALVM_DIST }}
           maven-opts: "-Xmx1g"
           maven-args: "-DskipTests -DskipITs"
