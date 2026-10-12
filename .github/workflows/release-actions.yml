@@ -71,7 +71,9 @@ jobs:
           echo "retry: ${{ github.event.inputs.retry }}"
 
           git pull
-          
+
+          ACTION_SHA=$(git rev-parse HEAD)
+
           VERSION=$(npm version ${INPUT_VERSION} --tag-version-prefix="" --no-git-tag-version)
           echo ${INPUT_VERSION} -- ${VERSION}
 
@@ -94,6 +96,9 @@ jobs:
 
           # Create a new branch for the release
           git checkout -b ${BRANCH}
+
+          # Pin internal composite action references to the pre-release commit SHA
+          sed -i "s|native-build@main|native-build@${ACTION_SHA} # ${VERSION}|g" .github/workflows/*.yml
 
           git add .github
           git commit -m "📝 Release ${VERSION}" --allow-empty

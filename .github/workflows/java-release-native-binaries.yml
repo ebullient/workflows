@@ -41,7 +41,8 @@ jobs:
           ref: 'main'
 
       - name: Build ${{ matrix.os }} native binary
-        uses: ./.github/actions/native-build
+        # zizmor: ignore[unpinned-uses] -- rewritten to a pinned SHA by release-actions.yml at release time
+        uses: ebullient/workflows/.github/actions/native-build@main
         with:
           artifact: ${{ inputs.artifact }}
           version: ${{ inputs.version }}
