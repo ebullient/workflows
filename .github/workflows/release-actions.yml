@@ -98,7 +98,7 @@ jobs:
           git checkout -b ${BRANCH}
 
           # Pin internal composite action references to the pre-release commit SHA
-          sed -i "s|native-build@main|native-build@${ACTION_SHA} # ${VERSION}|g" .github/workflows/*.yml
+          sed -i "s|native-build@e9e9b0e7bde73fab2365f0ab5ad9bb9f647c65e9 # 0.2.3|native-build@${ACTION_SHA} # ${VERSION}|g" .github/workflows/*.yml
 
           git add .github
           git commit -m "📝 Release ${VERSION}" --allow-empty
